@@ -29,36 +29,35 @@ TODO
 
 Simple. Good error messages. Let's look at the error messages provided by each of these libraries.
 
-  <!-- RNG schema -->
-  <element name="addressBook" xmlns="http://relaxng.org/ns/structure/1.0">
-    <zeroOrMore>
-      <element name="card">
-        <attribute name="version">
-	  <choice>
-	    <value>v1</value>
-	    <value>v2</value>
-	  </choice>
-        </attribute>
-        <element name="name">
-	  <text/>
-        </element>
-      </element>
-    </zeroOrMore>
-  </element>
+ <!-- RNG schema -->
+ <element name="addressBook" xmlns="http://relaxng.org/ns/structure/1.0">
+   <zeroOrMore>
+     <element name="card">
+       <attribute name="version">
+         <choice>
+           <value>v1</value>
+           <value>v2</value>
+         </choice>
+       </attribute>
+       <element name="name">
+         <text/>
+       </element>
+     </element>
+   </zeroOrMore>
+ </element>
 
-  <!-- XML A -->
-  <addressBook>
-    <card></card>
-  </addressBook>
+ <!-- XML A -->
+ <addressBook>
+   <card></card>
+ </addressBook>
 
-  <!-- XML B -->
-  <addressBook>
-    <card verison="v100">    
-      <name>John Smith</name>
-      <oops>Doh!</oops>
-    </card>
-  </addressBook>
-
+ <!-- XML B -->
+ <addressBook>
+   <card verison="v100">    
+     <name>John Smith</name>
+     <oops>Doh!</oops>
+   </card>
+ </addressBook>
 
 ==== Nokorigi/libxml
 
@@ -67,7 +66,7 @@ Simple. Good error messages. Let's look at the error messages provided by each o
   errors = schema.validate(doc)  
   errors.each { |e| puts e }
 
-Results in the following error messages
+Results in the following error messages:
 
   # XML A
   Element card failed to validate attributes
@@ -84,7 +83,7 @@ Results in the following error messages
   validator = Validation::RelaxNG.new(File.read(rng))
   validator.validate(doc)
 
-Fails for XML A and XML B -it treats the XML declraion as a validation error
+Fails for XML A and XML B --it treats the XML declraion as a validation error!
 
   Validation error.  Expected: :start_element( addressBook ) from < S.1 #:start_element( addressBook ), < Z.2 #:start_element( card ), :start_attribute( version ), < C.3 :text( v1 ) or :text( v2 ) >, :end_attribute(  ), :start_element( name ), :text(  ), :end_element(  ), :start_element( email ), :text(  ), :end_element(  ), :end_element(  ) >, :end_element(  ), :end_document(  ) >  but got <?xml ... ?>( 
    )
