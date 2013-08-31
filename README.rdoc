@@ -1,0 +1,122 @@
+= Ruby Jing
+
+RelaxNG schema validation using {Jing}[http://www.thaiopensource.com/relaxng/jing.html]
+
+=== Overview
+
+  require "jing"
+
+  v = Jing.new(options)
+  begin
+    errors = v.validate(rngpath, xmlpath)
+  rescue Jing::OptionError, Jing::ExecutionError => e
+    abort "what what what #{e}"
+  end
+
+  if errors.none?
+    puts "Valid!"
+  else
+    errors.each do |error|
+      puts "#{error[:message]} @ #{error[:line]}:#{error[:column]}"
+    end
+  end
+
+=== Options
+
+=== Why use Java to validate instead of Ruby libraries like Nokorigi, REXML, libxml, etc..?
+
+Simple. Good error messages. Let's look at the error messages provided by each of these libraries.
+
+  <!-- RNG schema -->
+  <element name="addressBook" xmlns="http://relaxng.org/ns/structure/1.0">
+    <zeroOrMore>
+      <element name="card">
+	<attribute name="version">
+	  <choice>
+	    <value>v1</value>
+	    <value>v2</value>
+	  </choice>
+	</attribute>
+	<element name="name">
+	  <text/>
+	</element>
+      </element>
+    </zeroOrMore>
+  </element>
+
+  <!-- XML A -->
+  <addressBook>
+    <card></card>
+  </addressBook>
+
+  <!-- XML B -->
+  <addressBook>
+    <card verison="v100">    
+      <name>John Smith</name>
+      <oops>Doh!</oops>
+    </card>
+  </addressBook>
+
+
+==== Nokorigi/libxml
+
+  schema = Nokogiri::XML::RelaxNG(rng)
+  doc = Nokogiri::XML(xml)
+  errors = schema.validate(doc)  
+  errors.each { |e| puts e }
+
+===== Messages
+
+  # XML A
+  Element card failed to validate attributes
+  Expecting an element , got nothing
+
+  # XML B
+  Element card failed to validate attributes
+  Did not expect element oops there
+
+==== REXML
+
+  include REXML
+  doc = Document.new(File.read(xml))
+  validator = Validation::RelaxNG.new(File.read(rng))
+  validator.validate(doc)
+
+===== Messages
+
+  # Completely fails for XML A and XML B
+  Validation error.  Expected: :start_element( addressBook ) from < S.1 #:start_element( addressBook ), < Z.2 #:start_element( card ), :start_attribute( version ), < C.3 :text( v1 ) or :text( v2 ) >, :end_attribute(  ), :start_element( name ), :text(  ), :end_element(  ), :start_element( email ), :text(  ), :end_element(  ), :end_element(  ) >, :end_element(  ), :end_document(  ) >  but got <?xml ... ?>( 
+   )
+
+==== Jing
+
+  jing = Jing.new
+  errors = jing.validate(rng, xml)
+  errors.each { |e| puts e[:error] }
+
+===== Messages 
+
+  # XML A
+  element "card" missing required attribute "version"
+  element "card" incomplete; missing required element "name"
+
+  # XML B
+  value of attribute "version" is invalid; must be equal to "v1" or "v2"
+  element "oops" not allowed anywhere; expected the element end-tag
+
+=== License
+
+Released under the MIT License: www.opensource.org/licenses/MIT
+
+=== Jing Copying Conditions
+
+Copyright (c) 2001-2003 Thai Open Source Software Center Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* Neither the name of the Thai Open Source Software Center Ltd nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
