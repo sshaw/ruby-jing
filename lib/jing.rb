@@ -1,6 +1,7 @@
 require "optout"
 
 class Jing
+  VERSION = "0.0.1"
   DEFAULT_JAR = File.join(File.dirname(__FILE__), "jing-20091111.jar")
 
   Error = Class.new(StandardError)
