@@ -23,6 +23,8 @@ RelaxNG schema validation using {Jing}[http://www.thaiopensource.com/relaxng/jin
 
 === Options
 
+TODO 
+
 === Why use Java to validate instead of Ruby libraries like Nokorigi, REXML, libxml, etc..?
 
 Simple. Good error messages. Let's look at the error messages provided by each of these libraries.
@@ -31,15 +33,15 @@ Simple. Good error messages. Let's look at the error messages provided by each o
   <element name="addressBook" xmlns="http://relaxng.org/ns/structure/1.0">
     <zeroOrMore>
       <element name="card">
-	<attribute name="version">
+        <attribute name="version">
 	  <choice>
 	    <value>v1</value>
 	    <value>v2</value>
 	  </choice>
-	</attribute>
-	<element name="name">
+        </attribute>
+        <element name="name">
 	  <text/>
-	</element>
+        </element>
       </element>
     </zeroOrMore>
   </element>
@@ -65,7 +67,7 @@ Simple. Good error messages. Let's look at the error messages provided by each o
   errors = schema.validate(doc)  
   errors.each { |e| puts e }
 
-===== Messages
+Results in the following error messages
 
   # XML A
   Element card failed to validate attributes
@@ -82,9 +84,8 @@ Simple. Good error messages. Let's look at the error messages provided by each o
   validator = Validation::RelaxNG.new(File.read(rng))
   validator.validate(doc)
 
-===== Messages
+Fails for XML A and XML B -it treats the XML declraion as a validation error
 
-  # Completely fails for XML A and XML B
   Validation error.  Expected: :start_element( addressBook ) from < S.1 #:start_element( addressBook ), < Z.2 #:start_element( card ), :start_attribute( version ), < C.3 :text( v1 ) or :text( v2 ) >, :end_attribute(  ), :start_element( name ), :text(  ), :end_element(  ), :start_element( email ), :text(  ), :end_element(  ), :end_element(  ) >, :end_element(  ), :end_document(  ) >  but got <?xml ... ?>( 
    )
 
@@ -94,7 +95,7 @@ Simple. Good error messages. Let's look at the error messages provided by each o
   errors = jing.validate(rng, xml)
   errors.each { |e| puts e[:error] }
 
-===== Messages 
+Results in the following error messages:
 
   # XML A
   element "card" missing required attribute "version"
