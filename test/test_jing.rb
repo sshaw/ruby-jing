@@ -79,7 +79,7 @@ class TestJing < Minitest::Spec
   def test_invalid_instance_xml_errors_are_parsed
     errors = Jing.new.validate(RNG_SCHEMA, INVALID_XML)
     assert_equal 1, errors.size
-    
+
     err = errors[0]
     assert_equal INVALID_XML, err[:file]
     assert_equal 4, err[:line]
@@ -91,9 +91,9 @@ class TestJing < Minitest::Spec
     output = "something bad happened"
     assert_raises Jing::ExecutionError, /#{output}/ do
       fakeshell(:exit => 0, :output => output) { Jing.new.validate(RNC_SCHEMA, VALID_XML) }
-    end    
+    end
   end
-  
+
   private
   def fakeshell(options = {})
     output = options.delete(:output) || ""
@@ -110,7 +110,7 @@ class TestJing < Minitest::Spec
     end
 
     yield
-    cmd.tr %{"}, %{'}  # replace Win quotes with *nix    
+    cmd.tr %{"}, %{'}  # replace Win quotes with *nix
   ensure
     Object.class_eval do
       undef_method "`" #`
@@ -119,4 +119,3 @@ class TestJing < Minitest::Spec
     end
   end
 end
-

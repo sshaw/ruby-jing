@@ -2,6 +2,8 @@
 
 RELAX NG schema validation using {Jing}[http://www.thaiopensource.com/relaxng/jing.html]
 
+{<img src="https://codeclimate.com/badge.png"/>}[https://codeclimate.com/github/sshaw/ruby_jing]
+
 === Overview
 
   require "jing"
