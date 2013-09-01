@@ -1,9 +1,8 @@
-require File.expand_path("../lib/jing", __FILE__)
 require "date"
 
 Gem::Specification.new do |s|
   s.name        = "ruby_jing"
-  s.version     = Jing::VERSION
+  s.version     = "0.0.1"
   s.date        = Date.today
   s.summary     = "RELAX NG schema validation using Jing"
   s.description =<<-DESC
@@ -21,3 +20,5 @@ Gem::Specification.new do |s|
   s.add_dependency "optout", ">= 0.0.2"
   s.add_development_dependency "rake", "~> 0.9.2"
 end
+
+

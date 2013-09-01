@@ -110,7 +110,7 @@ Better, don't ya think?
 * {Docs}[http://rdoc.info/gems/ruby_jing/frames]
 * {Bugs}[http://github.com/sshaw/ruby_jing/issues]
 
-== Author
+=== Author
 
 Skye Shaw [skye.shaw AT gmail.com]
 
