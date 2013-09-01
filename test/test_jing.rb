@@ -3,7 +3,7 @@ require "tempfile"
 require "jing"
 
 class TestJing < Minitest::Spec
-  root = File.join(File.dirname(__FILE__), "fixtures")
+  root = File.join(File.expand_path(File.dirname(__FILE__)), "fixtures")
 
   VALID_XML = File.join(root, "valid.xml")
   INVALID_XML = File.join(root, "invalid.xml")
@@ -21,42 +21,53 @@ class TestJing < Minitest::Spec
     end
   end
 
-  def test_jar_option_used
+  def test_jar_option
     jar = Tempfile.new "jar"
     cmd = fakeshell { Jing.new(:jar => jar.path).validate(RNG_SCHEMA, VALID_XML) }
     assert_match /\A'java'\s+ -jar\s+ '#{jar.path}' \s+/x, cmd
   end
 
-  def test_java_option_used
+  def test_java_option
     java = "/usr/alt/java"
     cmd = fakeshell { Jing.new(:java => java).validate(RNG_SCHEMA, VALID_XML) }
     assert_match /\A'#{java}'\s+/, cmd
   end
 
   def test_java_must_exist
-    assert_raises Jing::OptionError, /\bjava\b/ do
+    # This should be an OptionError!
+    assert_raises Jing::ExecutionError, /\bjava\b/ do
       Jing.new(:java => "__no_no_no__").validate(RNG_SCHEMA, VALID_XML)
     end
   end
 
-  def test_encoding_option_used
+  def test_encoding_option
     enc = "iso-8859-1"
-    cmd = fakeshell { Jing.new(:encoding => enc).validate(RNG_SCHEMA, "film.xml") }
+    cmd = fakeshell { Jing.new(:encoding => enc).validate(RNG_SCHEMA, VALID_XML) }
     assert_match /\A'java'\s+ -jar\s+ '#{Jing::DEFAULT_JAR}'\s+ -e\s+ '#{enc}'/x, cmd
   end
 
-  # def test_id_check_option_used
-  # end
+  def test_id_check_option
+    cmd = fakeshell { Jing.new(:id_check => false).validate(RNG_SCHEMA, VALID_XML) }
+    assert_match /\A'java'\s -jar\s+ '#{Jing::DEFAULT_JAR}'\s+ -i/x, cmd
 
-  #def test_compact_option_used_when_true
-  #end
+    cmd = fakeshell { Jing.new(:id_check => true).validate(RNG_SCHEMA, VALID_XML) }
+    refute_match /\b-i\b/x, cmd
+
+    cmd = fakeshell { Jing.new.validate(RNG_SCHEMA, VALID_XML) }
+    refute_match /\b-i\b/x, cmd
+  end
+
+  def test_compact_option
+    cmd = fakeshell { Jing.new(:compact => true).validate(RNC_SCHEMA, VALID_XML) }
+    assert_match /\A'java'\s -jar\s+ '#{Jing::DEFAULT_JAR}'\s+ -c/x, cmd
+
+    cmd = fakeshell { Jing.new(:compact => false).validate(RNC_SCHEMA, VALID_XML) }
+    refute_match /\b-c\b/, cmd
+  end
 
   def test_compact_option_when_compact_schema_is_used
-    cmd = fakeshell { Jing.new.validate(RNC_SCHEMA, "film.xml") }
+    cmd = fakeshell { Jing.new.validate(RNC_SCHEMA, VALID_XML) }
     assert_match /\A'java'\s+ -jar\s+ '#{Jing::DEFAULT_JAR}'\s+ -c/x, cmd
-
-    cmd = fakeshell { Jing.new(:compact => false).validate(RNC_SCHEMA, "film.xml") }
-    refute_match /\b-c\b/, cmd
   end
 
   def test_relaxng_file_must_exist
@@ -72,11 +83,15 @@ class TestJing < Minitest::Spec
   end
 
   def test_valid_instance_xml_returns_no_errors
+    skip_unless_java_installed!
+
     errors = Jing.new.validate(RNG_SCHEMA, VALID_XML)
     assert_equal 0, errors.size
   end
 
   def test_invalid_instance_xml_errors_are_parsed
+    skip_unless_java_installed!
+
     errors = Jing.new.validate(RNG_SCHEMA, INVALID_XML)
     assert_equal 1, errors.size
 
@@ -95,6 +110,17 @@ class TestJing < Minitest::Spec
   end
 
   private
+  def skip_unless_java_installed!
+    @have_java ||= begin
+      `java`
+       true
+     rescue => e
+       false
+    end
+
+    skip "cannot find java executable" unless @have_java
+  end
+
   def fakeshell(options = {})
     output = options.delete(:output) || ""
     exit_code = options.delete(:exit) || 0

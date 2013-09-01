@@ -18,6 +18,25 @@ class Jing
     on :xmlfile,          Optout::File.exists, :required => true
   end
 
+
+
+  ##
+  # === Arguments 
+  #
+  # [options (Hash)] Jing options. Optional.
+  #
+  # === Options
+  #  
+  # [:java (String)] Name and/or location of the java executable. Defaults to <code>"java"</code>.
+  # [:jar (String)] Path to the Jing JAR file. Defaults to the bundled JAR.
+  # [:compact (Boolean)] Set to +true+ if the schema uses the RELAX NG compact syntax. Defaults to false, will be set to +true+ is the schema has a +.rnc+ extension.
+  # [:encoding (String)] Encoding of the XML document.
+  # [:id_check (Boolean)] Disable checking of ID/IDREF/IDREFS. Defaults to +false+
+
+  # === Errors
+  #
+  # [ArgumentError] If the options are not +nil+ or a +Hash+.
+
   def initialize(options = nil)
     if options
       raise ArgumentError, "options must be a Hash" unless Hash === options
@@ -25,12 +44,43 @@ class Jing
     end
 
     @options ||= {}
+    # Optout quirk: true will *include* the switch, which means we *don't* want to check 
+    @options[:id_check] = !@options[:id_check] if @options.include?(:id_check)
   end
 
+  ##
+  # Validate an XML document against a RELAX NG schema file. The schema can be in the XML or the compact syntax.
+  #
+  #  jing = Jing.new(options)
+  #  jing.validate("schema.rng", "doc.xml")
+  #
+  # === Arguments 
+  #
+  # [rng (String)] Path the RELAX NG schema file
+  # [xml (String)] Path to the XML file
+  #
+  # === Errors
+  #
+  # [Jing::OptionError] A Jing option was invalid. Note that this <b>does not apply to an invalid <code>:java</code> option.</b> 
+  # [Jing::ExecutionError] Problems were encountered trying to execute Jing.
+  #
+  # === Returns
+  #
+  # [Array] The errors, each element is a +Hash+. See Error Hash for more info.
+  # 
+  # ==== Error Hash
+  #
+  # The error hash contains the following keys/values
+  #
+  # [:file (String)] File that contained the error. Can be the schema or the instance XML.
+  # [:line (Fixnum)] Line number
+  # [:column (Fixnum)] Column number
+  # [:message (String)] The problem
+  
   def validate(rng, xml)
     @options[:compact] = true if @options[:compact].nil? and rng =~ /\.rnc\Z/i   # Don't override an explicit setting
     @options[:rngfile] = rng
-    @options[:xmlfile] = xml
+    @options[:xmlfile] = xml    
 
     out = execute(@options)
     return [] if $?.success? and out.empty?

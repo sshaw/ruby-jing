@@ -2,15 +2,16 @@
 
 RELAX NG schema validation using {Jing}[http://www.thaiopensource.com/relaxng/jing.html]
 
+{<img src="https://secure.travis-ci.org/sshaw/ruby_jing.png"/>}[http://travis-ci.org/sshaw/ruby_jing]
 {<img src="https://codeclimate.com/github/sshaw/ruby_jing.png" />}[https://codeclimate.com/github/sshaw/ruby_jing]
 
 === Overview
 
   require "jing"
 
-  v = Jing.new(options)
+  jing = Jing.new(options)
   begin
-    errors = v.validate(rngpath, xmlpath)
+    errors = jing.validate(rngpath, xmlpath)
   rescue Jing::OptionError, Jing::ExecutionError => e
     abort "what what what #{e}"
   end
@@ -22,16 +23,6 @@ RELAX NG schema validation using {Jing}[http://www.thaiopensource.com/relaxng/ji
       puts "#{error[:message]} @ #{error[:line]}:#{error[:column]}"
     end
   end
-
-=== Usage
-
-All options are passed to the constructor as a +Hash+.
-
-[:java (String)] Name and/or location of the java executable. Defaults to <code>"java"</code>.
-[:jar (String)] Path to the Jing JAR file. Defaults to the bundled JAR.
-[:compact (Boolean)] Set to +true+ if the schema uses the RELAX NG compact syntax. Defaults to false, will be set to +true+ is the schema has a +.rnc+ extension.
-[:encoding (String)] Encoding of the XML document.
-[:id_check (Boolean)] Disable checking of ID/IDREF/IDREFS. Defaults to +false+
 
 === Why use Java to validate instead of Ruby libraries like Nokorigi, REXML, libxml, etc..?
 
@@ -113,6 +104,15 @@ Resulting errors:
   element "oops" not allowed anywhere; expected the element end-tag
 
 Better, don't ya think?
+
+=== More Info
+
+* {Docs}[http://rdoc.info/gems/ruby_jing/frames]
+* {Bugs}[http://github.com/sshaw/ruby_jing/issues]
+
+== Author
+
+Skye Shaw [skye.shaw AT gmail.com]
 
 === License
 
