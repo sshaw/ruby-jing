@@ -54,10 +54,10 @@ class Jing
     output.split("\n").map do |line|
       if line =~ /\A(.+):(\d+):(\d+):\s+\w+:\s+(.+)\Z/
         errors << {
-          :file   => $1,
-          :line   => $2.to_i,
-          :column => $3.to_i,
-          :error  => $4
+          :file    => $1,
+          :line    => $2.to_i,
+          :column  => $3.to_i,
+          :message => $4
         }
       end
     end

@@ -5,13 +5,15 @@ Gem::Specification.new do |s|
   s.name        = "ruby-jing"
   s.version     = Jing::VERSION
   s.date        = Date.today
-  s.summary     = "RelaxNG schema validation using Jing"
+  s.summary     = "RELAX NG schema validation using Jing"
   s.description =<<-DESC
-    RelaxNG schema validation using Jing
+    RELAX NG schema validation using Jing, a Java based RelaxNG validator that emits clear,
+    detailed validation errors. ruby-jing validates XML documents by wrapping Jing's java
+    command-line user interface.
   DESC
   s.authors     = ["Skye Shaw"]
   s.email       = "skye.shaw@gmail.com"
-  s.test_files  = Dir["test/**/*.*"] 
+  s.test_files  = Dir["test/**/*.*"]
   s.extra_rdoc_files = %w[README.rdoc]
   s.files       = Dir["lib/**/*.rb"] + s.test_files + s.extra_rdoc_files
   s.homepage    = "http://github.com/sshaw/ruby-jing"

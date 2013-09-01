@@ -1,6 +1,6 @@
 = Ruby Jing
 
-RelaxNG schema validation using {Jing}[http://www.thaiopensource.com/relaxng/jing.html]
+RELAX NG schema validation using {Jing}[http://www.thaiopensource.com/relaxng/jing.html]
 
 === Overview
 
@@ -21,13 +21,19 @@ RelaxNG schema validation using {Jing}[http://www.thaiopensource.com/relaxng/jin
     end
   end
 
-=== Options
+=== Usage
 
-TODO 
+All options are passed to the constructor as a +Hash+.
+
+[:java (String)] Name and/or location of the java executable. Defaults to <code>"java"</code>.
+[:jar (String)] Path to the Jing JAR file. Defaults to the bundled JAR.
+[:compact (Boolean)] Set to +true+ if the schema uses the RELAX NG compact syntax. Defaults to false, will be set to +true+ is the schema has a +.rnc+ extension.
+[:encoding (String)] Encoding of the XML document.
+[:id_check (Boolean)] Disable checking of ID/IDREF/IDREFS. Defaults to +false+
 
 === Why use Java to validate instead of Ruby libraries like Nokorigi, REXML, libxml, etc..?
 
-Simple. Good error messages. Let's look at the error messages provided by each of these libraries.
+Simple: good error messages. Let's look at the error messages provided by each of these libraries.
 
  <!-- RNG schema -->
  <element name="addressBook" xmlns="http://relaxng.org/ns/structure/1.0">
@@ -66,7 +72,7 @@ Simple. Good error messages. Let's look at the error messages provided by each o
   errors = schema.validate(doc)  
   errors.each { |e| puts e }
 
-Results in the following error messages:
+Resulting errors:
 
   # XML A
   Element card failed to validate attributes
@@ -83,7 +89,7 @@ Results in the following error messages:
   validator = Validation::RelaxNG.new(File.read(rng))
   validator.validate(doc)
 
-Fails for XML A and XML B --it treats the XML declraion as a validation error!
+Fails for XML A and XML B --it treats the XML declaration as a validation error!
 
   Validation error.  Expected: :start_element( addressBook ) from < S.1 #:start_element( addressBook ), < Z.2 #:start_element( card ), :start_attribute( version ), < C.3 :text( v1 ) or :text( v2 ) >, :end_attribute(  ), :start_element( name ), :text(  ), :end_element(  ), :start_element( email ), :text(  ), :end_element(  ), :end_element(  ) >, :end_element(  ), :end_document(  ) >  but got <?xml ... ?>( 
    )
@@ -94,7 +100,7 @@ Fails for XML A and XML B --it treats the XML declraion as a validation error!
   errors = jing.validate(rng, xml)
   errors.each { |e| puts e[:error] }
 
-Results in the following error messages:
+Resulting errors:
 
   # XML A
   element "card" missing required attribute "version"
@@ -103,6 +109,8 @@ Results in the following error messages:
   # XML B
   value of attribute "version" is invalid; must be equal to "v1" or "v2"
   element "oops" not allowed anywhere; expected the element end-tag
+
+Better, don't ya think?
 
 === License
 
