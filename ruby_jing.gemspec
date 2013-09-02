@@ -20,5 +20,3 @@ Gem::Specification.new do |s|
   s.add_dependency "optout", ">= 0.0.2"
   s.add_development_dependency "rake", "~> 0.9.2"
 end
-
-

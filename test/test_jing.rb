@@ -2,7 +2,7 @@ require "minitest/autorun"
 require "tempfile"
 require "jing"
 
-class TestJing < Minitest::Spec
+class TestJing < MiniTest::Unit::TestCase
   root = File.join(File.expand_path(File.dirname(__FILE__)), "fixtures")
 
   VALID_XML = File.join(root, "valid.xml")
@@ -83,15 +83,11 @@ class TestJing < Minitest::Spec
   end
 
   def test_valid_instance_xml_returns_no_errors
-    skip_unless_java_installed!
-
     errors = Jing.new.validate(RNG_SCHEMA, VALID_XML)
     assert_equal 0, errors.size
   end
 
   def test_invalid_instance_xml_errors_are_parsed
-    skip_unless_java_installed!
-
     errors = Jing.new.validate(RNG_SCHEMA, INVALID_XML)
     assert_equal 1, errors.size
 
@@ -110,17 +106,6 @@ class TestJing < Minitest::Spec
   end
 
   private
-  def skip_unless_java_installed!
-    @have_java ||= begin
-      `java`
-       true
-     rescue => e
-       false
-    end
-
-    skip "cannot find java executable" unless @have_java
-  end
-
   def fakeshell(options = {})
     output = options.delete(:output) || ""
     exit_code = options.delete(:exit) || 0
