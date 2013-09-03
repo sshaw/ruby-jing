@@ -1,9 +1,9 @@
 = Ruby Jing
 
-RELAX NG schema validation using {Jing}[http://www.thaiopensource.com/relaxng/jing.html]
+{<img src="https://secure.travis-ci.org/sshaw/ruby-jing.png"/>}[http://travis-ci.org/sshaw/ruby-jing]
+{<img src="https://codeclimate.com/github/sshaw/ruby-jing.png" />}[https://codeclimate.com/github/sshaw/ruby-jing]
 
-{<img src="https://secure.travis-ci.org/sshaw/ruby_jing.png"/>}[http://travis-ci.org/sshaw/ruby_jing]
-{<img src="https://codeclimate.com/github/sshaw/ruby_jing.png" />}[https://codeclimate.com/github/sshaw/ruby_jing]
+RELAX NG schema validation using {Jing}[http://www.thaiopensource.com/relaxng/jing.html]
 
 === Overview
 
@@ -91,7 +91,7 @@ Fails for XML A and XML B --it treats the XML declaration as a validation error!
 
   jing = Jing.new
   errors = jing.validate(rng, xml)
-  errors.each { |e| puts e[:error] }
+  errors.each { |e| puts e[:message] }
 
 Resulting errors:
 
@@ -107,8 +107,8 @@ Better, don't ya think?
 
 === More Info
 
-* {Docs}[http://rdoc.info/gems/ruby_jing/frames]
-* {Bugs}[http://github.com/sshaw/ruby_jing/issues]
+* {Docs}[http://rdoc.info/gems/ruby-jing/frames]
+* {Bugs}[http://github.com/sshaw/ruby-jing/issues]
 
 === Author
 
