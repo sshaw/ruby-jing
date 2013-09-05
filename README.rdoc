@@ -3,15 +3,15 @@
 {<img src="https://secure.travis-ci.org/sshaw/ruby-jing.png"/>}[http://travis-ci.org/sshaw/ruby-jing]
 {<img src="https://codeclimate.com/github/sshaw/ruby-jing.png" />}[https://codeclimate.com/github/sshaw/ruby-jing]
 
-RELAX NG schema validation using {Jing}[http://www.thaiopensource.com/relaxng/jing.html]
+RELAX NG schema validation using the {Jing CLI}[http://www.thaiopensource.com/relaxng/jing.html]
 
 === Overview
 
   require "jing"
 
-  jing = Jing.new(options)
+  jing = Jing.new("schema.rng")
   begin
-    errors = jing.validate(rngpath, xmlpath)
+    errors = jing.validate("doc.xml")
   rescue Jing::OptionError, Jing::ExecutionError => e
     abort "what what what #{e}"
   end
@@ -23,6 +23,9 @@ RELAX NG schema validation using {Jing}[http://www.thaiopensource.com/relaxng/ji
       puts "#{error[:message]} @ #{error[:line]}:#{error[:column]}"
     end
   end
+
+  # This can also raise errors
+  abort "Invalid!" unless jing.valid?("/path/to/doc.xml")
 
 === Why use Java to validate instead of Ruby libraries like Nokorigi, REXML, libxml, etc..?
 
@@ -60,8 +63,8 @@ Simple: good error messages. Let's look at the error messages provided by each o
 
 ==== Nokorigi/libxml
 
-  schema = Nokogiri::XML::RelaxNG(rng)
-  doc = Nokogiri::XML(xml)
+  schema = Nokogiri::XML::RelaxNG(File.read(rng))
+  doc = Nokogiri::XML(File.read(xml))
   errors = schema.validate(doc)  
   errors.each { |e| puts e }
 
@@ -89,8 +92,8 @@ Fails for XML A and XML B --it treats the XML declaration as a validation error!
 
 ==== Jing
 
-  jing = Jing.new
-  errors = jing.validate(rng, xml)
+  jing = Jing.new(schema)
+  errors = jing.validate(xml)
   errors.each { |e| puts e[:message] }
 
 Resulting errors:
