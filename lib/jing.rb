@@ -35,7 +35,7 @@ class Jing
   # [:compact (Boolean)] Set to +true+ if the schema uses the RELAX NG compact syntax. Defaults to false, will be set to +true+ is the schema has a +.rnc+ extension.
   # [:encoding (String)] Encoding of the XML document.
   # [:id_check (Boolean)] Disable checking of ID/IDREF/IDREFS. Defaults to +false+
-
+  #
   # === Errors
   #
   # [ArgumentError] If the options are not +nil+ or a +Hash+.
@@ -90,7 +90,7 @@ class Jing
     errors
   end
 
-  # Validate an XML document against the schema. To receive a list of vlidation errors use #validate.
+  # Validate an XML document against the schema. To receive a list of validation errors use #validate.
   #
   #  puts "yay!" if jing.valid?("doc.xml")
   #
