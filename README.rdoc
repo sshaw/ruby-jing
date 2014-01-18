@@ -12,7 +12,7 @@ RELAX NG schema validation using the {Jing CLI}[http://www.thaiopensource.com/re
   jing = Jing.new("schema.rng")
   begin
     errors = jing.validate("doc.xml")
-  rescue Jing::OptionError, Jing::ExecutionError => e
+  rescue Jing::Error => e
     abort "what what what #{e}"
   end
 
