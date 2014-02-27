@@ -124,7 +124,7 @@ class Jing
 
   def parse_output(output)
     errors = []
-    output.split("\n").map do |line|
+    output.split("\n").each do |line|
       if line =~ /\A(.+):(\d+):(\d+):\s+\w+:\s+(.+)\Z/
 	errors << {
 	  :source  => $1,
