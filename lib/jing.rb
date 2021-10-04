@@ -10,6 +10,7 @@ class Jing
 
   @@option_builder = Optout.options do
     on :java,     :required => true, :default => "java"
+    on :java_opts,        String
     on :jar,      "-jar", Optout::File.exists, :default => DEFAULT_JAR
     on :compact,  "-c",   Optout::Boolean
     on :encoding, "-e",   String
@@ -51,6 +52,9 @@ class Jing
     @options[:compact] = true if @options[:compact].nil? and @options[:schema] =~ /\.rnc\Z/i   # Don't override an explicit setting
     # Optout quirk: true will *include* the switch, which means we *don't* want to check
     @options[:id_check] = !@options[:id_check] if @options.include?(:id_check)
+    if @options[:encoding]
+      @options[:java_opts] = "-Dfile.encoding=#{@options[:encoding]}"
+    end
   end
 
   ##
@@ -126,14 +130,17 @@ class Jing
     errors = []
     output.split("\n").each do |line|
       if line =~ /\A(.+):(\d+):(\d+):\s+\w+:\s+(.+)\Z/
-	errors << {
-	  :source  => $1,
-	  :line    => $2.to_i,
-	  :column  => $3.to_i,
-	  :message => $4
-	}
+        errors << {
+          :source  => $1,
+          :line    => $2.to_i,
+          :column  => $3.to_i,
+          :message => $4
+        }
       end
     end
     errors
+  rescue ArgumentError => e
+    raise ExecutionError, "potentially wrong encoding of jing output." \
+      "try setting the file's encoding via the :encoding option: #{e}"
   end
 end
