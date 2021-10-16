@@ -43,7 +43,7 @@ class TestJing < MiniTest::Unit::TestCase
   def test_encoding_option
     enc = "iso-8859-1"
     cmd = fakeshell { Jing.new(RNG_SCHEMA, :encoding => enc).validate(VALID_XML) }
-    assert_match /\A'java'\s+ -jar\s+ '#{Jing::DEFAULT_JAR}'\s+ -e\s+ '#{enc}'/x, cmd
+    assert_match /\A'java'\s+ '-Dfile.encoding=#{enc}'\s+ -jar\s+ '#{Jing::DEFAULT_JAR}'\s+ -e\s+ '#{enc}'/x, cmd
   end
 
   def test_id_check_option
