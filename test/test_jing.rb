@@ -100,7 +100,7 @@ class TestJing < MiniTest::Unit::TestCase
     assert_equal 1, errors.size
 
     err = errors[0]
-    assert_equal INVALID_XML, err[:source]
+    assert_equal INVALID_XML, Pathname.new(err[:source]).cleanpath.to_s
     assert_equal 4, err[:line]
     assert_match /\A\d\d?\z/, err[:column].to_s
     assert_match /\bemail\b/, err[:message]
