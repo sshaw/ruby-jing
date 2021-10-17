@@ -1,0 +1,4 @@
+2021-10-16  v0.0.2
+--------------------
+* Add :encoding option (Thanks Alex Bobrikovich)
+* Better error handling for encoding mismatches (Thanks Alex Bobrikovich)
