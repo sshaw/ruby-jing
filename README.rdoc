@@ -1,6 +1,6 @@
 = Ruby Jing
 
-{<img src="https://secure.travis-ci.org/sshaw/ruby-jing.png"/>}[http://travis-ci.org/sshaw/ruby-jing]
+{<img src="https://github.com/sshaw/ruby-jing/actions/workflows/rake.yml/badge.svg"/>}[https://github.com/sshaw/ruby-jing/actions/workflows/rake.yml]
 {<img src="https://codeclimate.com/github/sshaw/ruby-jing.png" />}[https://codeclimate.com/github/sshaw/ruby-jing]
 
 RELAX NG schema validation using the {Jing CLI}[http://www.thaiopensource.com/relaxng/jing.html]
