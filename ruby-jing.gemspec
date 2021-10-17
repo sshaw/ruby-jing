@@ -18,6 +18,6 @@ Gem::Specification.new do |s|
   s.homepage    = "http://github.com/sshaw/ruby-jing"
   s.license     = "MIT"
   s.add_dependency "optout", ">= 0.0.2"
-  s.add_development_dependency "rake", "~> 0.9.2"
+  s.add_development_dependency "rake", ">= 12.3.3"
   s.add_development_dependency "minitest", "~> 4.0"
 end
