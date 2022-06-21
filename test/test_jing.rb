@@ -113,6 +113,14 @@ class TestJing < MiniTest::Unit::TestCase
     end
   end
 
+  def test_java_options_env
+    java_opts = ENV["_JAVA_OPTIONS"]
+    ENV["_JAVA_OPTIONS"] = "-Djava.io.tmpdir=#{Dir.tmpdir}"
+    errors = Jing.new(RNG_SCHEMA).validate(VALID_XML)
+    assert_equal 0, errors.size
+    ENV["_JAVA_OPTIONS"] = java_opts
+  end
+
   private
   def fakeshell(options = {})
     output = options.delete(:output) || ""
