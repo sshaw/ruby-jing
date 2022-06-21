@@ -139,7 +139,7 @@ class Jing
       when /Picked up _JAVA_OPTIONS: /
         # ignore diagnostic message
       else # There must have been a problem that was not schema related
-        raise ExecutionError, line
+        raise ExecutionError, output
       end
     end
     errors
