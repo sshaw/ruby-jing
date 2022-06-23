@@ -2,7 +2,7 @@ require "date"
 
 Gem::Specification.new do |s|
   s.name        = "ruby-jing"
-  s.version     = "0.0.2"
+  s.version     = "0.0.3"
   s.date        = Date.today
   s.summary     = "RELAX NG schema validation using the Jing CLI"
   s.description =<<-DESC
@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.homepage    = "http://github.com/sshaw/ruby-jing"
   s.license     = "MIT"
   s.add_dependency "optout", ">= 0.0.2"
+  s.add_development_dependency "bundler"
   s.add_development_dependency "rake", ">= 12.3.3"
   s.add_development_dependency "minitest", "~> 4.0"
 end
