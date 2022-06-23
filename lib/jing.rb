@@ -89,9 +89,8 @@ class Jing
 
     out = execute(@options)
     return [] if $?.success? and out.empty?
-    errors = parse_output(out)
-    raise ExecutionError, out if errors.none? # There must have been a problem that was not schema related
-    errors
+
+    parse_output(out)
   end
 
   # Validate an XML document against the schema. To receive a list of validation errors use #validate.
@@ -129,13 +128,18 @@ class Jing
   def parse_output(output)
     errors = []
     output.split("\n").each do |line|
-      if line =~ /\A(.+):(\d+):(\d+):\s+\w+:\s+(.+)\Z/
+      case line
+      when /\A(.+):(\d+):(\d+):\s+\w+:\s+(.+)\Z/
         errors << {
           :source  => $1,
           :line    => $2.to_i,
           :column  => $3.to_i,
           :message => $4
         }
+      when /Picked up _JAVA_OPTIONS: /
+        # ignore diagnostic message
+      else # There must have been a problem that was not schema related
+        raise ExecutionError, output
       end
     end
     errors

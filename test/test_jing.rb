@@ -113,6 +113,14 @@ class TestJing < MiniTest::Unit::TestCase
     end
   end
 
+  def test_java_options_env_diagnostic_message
+    output = "Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=/tmp"
+    fakeshell(:exit => 0, :output => output) {
+      errors = Jing.new(RNG_SCHEMA).validate(VALID_XML)
+      assert_equal 0, errors.size
+    }
+  end
+
   private
   def fakeshell(options = {})
     output = options.delete(:output) || ""
