@@ -32,6 +32,7 @@ class Jing
   # === Options
   #
   # [:java (String)] Name and/or location of the java executable. Defaults to <code>"java"</code>.
+  # [:java_opts (String)] JVM options passed to +java+, e.g. +"-Dfile.encoding=UTF-8"+. Use this to set +"-D"+ system properties (e.g. +jdk.xml.maxGeneralEntitySizeLimit+) instead of the +JAVA_TOOL_OPTIONS+/_JAVA_OPTIONS+ environment variables, which make the JVM print a +Picked up ...+ banner to stderr on every launch.
   # [:jar (String)] Path to the Jing JAR file. Defaults to the bundled JAR.
   # [:compact (Boolean)] Set to +true+ if the schema uses the RELAX NG compact syntax. Defaults to false, will be set to +true+ is the schema has a +.rnc+ extension.
   # [:encoding (String)] Encoding of the XML document.
@@ -53,7 +54,8 @@ class Jing
     # Optout quirk: true will *include* the switch, which means we *don't* want to check
     @options[:id_check] = !@options[:id_check] if @options.include?(:id_check)
     if @options[:encoding]
-      @options[:java_opts] = "-Dfile.encoding=#{@options[:encoding]}"
+      file_encoding = "-Dfile.encoding=#{@options[:encoding]}"
+      @options[:java_opts] = [@options[:java_opts], file_encoding].compact.join(" ")
     end
   end
 
@@ -136,8 +138,9 @@ class Jing
           :column  => $3.to_i,
           :message => $4
         }
-      when /Picked up _JAVA_OPTIONS: /
-        # ignore diagnostic message
+      when /Picked up [A-Z_][A-Z0-9_]*: /
+        # ignore JVM diagnostic banner printed for env vars like
+        # _JAVA_OPTIONS, JAVA_TOOL_OPTIONS and JDK_JAVA_OPTIONS
       else # There must have been a problem that was not schema related
         raise ExecutionError, output
       end

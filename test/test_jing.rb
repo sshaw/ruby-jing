@@ -121,6 +121,29 @@ class TestJing < MiniTest::Unit::TestCase
     }
   end
 
+  def test_java_tool_options_env_diagnostic_message
+    output = "Picked up JAVA_TOOL_OPTIONS: -Djdk.xml.maxGeneralEntitySizeLimit=200000"
+    fakeshell(:exit => 0, :output => output) {
+      errors = Jing.new(RNG_SCHEMA).validate(VALID_XML)
+      assert_equal 0, errors.size
+    }
+  end
+
+  def test_jdk_java_options_env_diagnostic_message
+    output = "Picked up JDK_JAVA_OPTIONS: -Dfile.encoding=UTF-8"
+    fakeshell(:exit => 0, :output => output) {
+      errors = Jing.new(RNG_SCHEMA).validate(VALID_XML)
+      assert_equal 0, errors.size
+    }
+  end
+
+  def test_java_opts_and_encoding_are_combined
+    opts = "-Djdk.xml.maxGeneralEntitySizeLimit=200000"
+    cmd = fakeshell { Jing.new(RNG_SCHEMA, :java_opts => opts, :encoding => "iso-8859-1").validate(VALID_XML) }
+    assert_match(/'#{opts} -Dfile\.encoding=iso-8859-1'\s+-jar/, cmd)
+    assert_match(/-e\s+ 'iso-8859-1'/x, cmd)
+  end
+
   private
   def fakeshell(options = {})
     output = options.delete(:output) || ""
