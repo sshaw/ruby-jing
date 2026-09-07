@@ -12,7 +12,7 @@ class TestJing < MiniTest::Unit::TestCase
 
   def test_default_jar_file_used
     cmd = fakeshell { Jing.new(RNG_SCHEMA).validate(VALID_XML) }
-    assert_match /\A'java'\s+ -jar\s+ '#{Jing::DEFAULT_JAR}' \s+/x, cmd
+    assert_match /\Ajava\s+ -jar\s+ #{Regexp.escape(Jing::DEFAULT_JAR)} \s+/x, cmd
   end
 
   def test_jar_file_must_exist
@@ -24,13 +24,13 @@ class TestJing < MiniTest::Unit::TestCase
   def test_jar_option
     jar = Tempfile.new "jar"
     cmd = fakeshell { Jing.new(RNG_SCHEMA, :jar => jar.path).validate(VALID_XML) }
-    assert_match /\A'java'\s+ -jar\s+ '#{jar.path}' \s+/x, cmd
+    assert_match /\Ajava\s+ -jar\s+ #{Regexp.escape(jar.path)} \s+/x, cmd
   end
 
   def test_java_option
     java = "/usr/alt/java"
     cmd = fakeshell { Jing.new(RNG_SCHEMA, :java => java).validate(VALID_XML) }
-    assert_match /\A'#{java}'\s+/, cmd
+    assert_match /\A#{Regexp.escape(java)}\s+/, cmd
   end
 
   def test_java_must_exist
@@ -43,12 +43,12 @@ class TestJing < MiniTest::Unit::TestCase
   def test_encoding_option
     enc = "iso-8859-1"
     cmd = fakeshell { Jing.new(RNG_SCHEMA, :encoding => enc).validate(VALID_XML) }
-    assert_match /\A'java'\s+ '-Dfile.encoding=#{enc}'\s+ -jar\s+ '#{Jing::DEFAULT_JAR}'\s+ -e\s+ '#{enc}'/x, cmd
+    assert_match /\Ajava\s+ -Dfile\.encoding=#{enc}\s+ -jar\s+ #{Regexp.escape(Jing::DEFAULT_JAR)}\s+ -e\s+ #{enc}/x, cmd
   end
 
   def test_id_check_option
     cmd = fakeshell { Jing.new(RNG_SCHEMA, :id_check => false).validate(VALID_XML) }
-    assert_match /\A'java'\s -jar\s+ '#{Jing::DEFAULT_JAR}'\s+ -i/x, cmd
+    assert_match /\Ajava\s -jar\s+ #{Regexp.escape(Jing::DEFAULT_JAR)}\s+ -i/x, cmd
 
     cmd = fakeshell { Jing.new(RNG_SCHEMA, :id_check => true).validate(VALID_XML) }
     refute_match /\b-i\b/x, cmd
@@ -59,7 +59,7 @@ class TestJing < MiniTest::Unit::TestCase
 
   def test_compact_option
     cmd = fakeshell { Jing.new(RNC_SCHEMA, :compact => true).validate(VALID_XML) }
-    assert_match /\A'java'\s -jar\s+ '#{Jing::DEFAULT_JAR}'\s+ -c/x, cmd
+    assert_match /\Ajava\s -jar\s+ #{Regexp.escape(Jing::DEFAULT_JAR)}\s+ -c/x, cmd
 
     cmd = fakeshell { Jing.new(RNC_SCHEMA, :compact => false).validate(VALID_XML) }
     refute_match /\b-c\b/, cmd
@@ -67,7 +67,7 @@ class TestJing < MiniTest::Unit::TestCase
 
   def test_compact_option_when_compact_schema_is_used
     cmd = fakeshell { Jing.new(RNC_SCHEMA).validate(VALID_XML) }
-    assert_match /\A'java'\s+ -jar\s+ '#{Jing::DEFAULT_JAR}'\s+ -c/x, cmd
+    assert_match /\Ajava\s+ -jar\s+ #{Regexp.escape(Jing::DEFAULT_JAR)}\s+ -c/x, cmd
   end
 
   def test_relaxng_file_must_exist
@@ -127,22 +127,22 @@ class TestJing < MiniTest::Unit::TestCase
     exit_code = options.delete(:exit) || 0
 
     cmd = nil
-    Object.class_eval do
-      alias_method "real_tick", "`"
-      define_method("`") do |arg|
-        cmd = arg
-        real_tick %{ruby -e"exit #{exit_code}"} # Just to set $?
-        output
+    Open3.singleton_class.class_eval do
+      alias_method "real_capture2e", "capture2e"
+      define_method("capture2e") do |*argv|
+        cmd = argv.join(" ")
+        `ruby -e"exit #{exit_code}"` # Just to set $?
+        [output, $?]
       end
     end
 
     yield
-    cmd.tr %{"}, %{'}  # replace Win quotes with *nix
+    cmd
   ensure
-    Object.class_eval do
-      undef_method "`" #`
-      alias_method "`", "real_tick"
-      undef_method "real_tick"
+    Open3.singleton_class.class_eval do
+      undef_method "capture2e"
+      alias_method "capture2e", "real_capture2e"
+      undef_method "real_capture2e"
     end
   end
 end
