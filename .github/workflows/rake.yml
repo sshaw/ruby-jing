@@ -2,8 +2,6 @@ name: rake
 
 on:
   push:
-    branches: [ master ]
-    tags: [ v* ]
   pull_request:
 
 jobs:
@@ -14,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ '3.1', '3.0', '2.7', '2.6', '2.5', '2.4' ]
+        ruby: [ '4.0', '3.4', '3.3', '3.2', '3.1', '3.0', '2.7' ]
         os: [ ubuntu-latest, windows-latest, macos-latest ]
         experimental: [ false ]
         include:
@@ -28,7 +26,7 @@ jobs:
             os: macos-latest
             experimental: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
 
       - uses: ruby/setup-ruby@v1
         with:
