@@ -1,3 +1,4 @@
+require "open3"
 require "optout"
 
 class Jing
@@ -89,8 +90,8 @@ class Jing
   def validate(xml)
     @options[:xmlfile] = xml
 
-    out = execute(@options)
-    return [] if $?.success? and out.empty?
+    out, status = execute(@options)
+    return [] if status.success? and out.empty?
 
     parse_output(out)
   end
@@ -118,9 +119,16 @@ class Jing
   end
 
   private
+  # Spawn java directly in argv form instead of shelling out via backticks.
+  # A shell-form spawn needs /bin/sh, which is not always reachable from the
+  # calling process (restricted containers, TruffleRuby processes with a
+  # virtual filesystem mounted at /, ...); direct exec needs no shell. It
+  # also removes the shell-injection surface of interpolating paths into a
+  # command string. Behavior is unchanged: stderr is merged into the
+  # captured output and the exit status is returned alongside it.
   def execute(options)
-    cmd = @@option_builder.shell(options)
-    `#{cmd} 2>&1`
+    argv = @@option_builder.argv(options)
+    Open3.capture2e(*argv)
   rescue SystemCallError => e
     raise ExecutionError, "jing execution failed: #{e}"
   rescue Optout::OptionError => e
