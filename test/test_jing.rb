@@ -140,8 +140,8 @@ class TestJing < MiniTest::Unit::TestCase
   def test_java_opts_and_encoding_are_combined
     opts = "-Djdk.xml.maxGeneralEntitySizeLimit=200000"
     cmd = fakeshell { Jing.new(RNG_SCHEMA, :java_opts => opts, :encoding => "iso-8859-1").validate(VALID_XML) }
-    assert_match(/'#{opts} -Dfile\.encoding=iso-8859-1'\s+-jar/, cmd)
-    assert_match(/-e\s+ 'iso-8859-1'/x, cmd)
+    assert_match(/#{opts} -Dfile\.encoding=iso-8859-1\s+-jar/, cmd)
+    assert_match(/-e\s+ iso-8859-1/x, cmd)
   end
 
   private
