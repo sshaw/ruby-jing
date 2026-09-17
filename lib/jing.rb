@@ -2,7 +2,7 @@ require "open3"
 require "optout"
 
 class Jing
-  VERSION = "0.0.3"
+  VERSION = "0.1.0"
   DEFAULT_JAR = File.join(File.dirname(__FILE__), "jing-20091111.jar")
 
   Error = Class.new(StandardError)
